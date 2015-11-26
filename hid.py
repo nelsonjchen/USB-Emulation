@@ -105,7 +105,8 @@ class USBHID(USBDevice):
     def handle_data(self, usb_req):
         # Sending random mouse data
         # Send data only for 5 seconds
-        if (datetime.datetime.now() - self.start_time).seconds < 5:
+        print "random"
+        if True:
             return_val = chr(0x0) + chr(random.randint(1, 10)) + chr(random.randint(1, 10)) + chr(random.randint(1, 10))
             self.send_usb_req(usb_req, return_val)
 
