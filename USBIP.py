@@ -1,4 +1,5 @@
-
+import hexdump
+from pprint import pprint
 import socket
 import struct
 import types

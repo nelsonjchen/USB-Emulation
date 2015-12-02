@@ -1,4 +1,5 @@
 import datetime
+from hexdump import hexdump
 from USBIP import BaseStucture, USBDevice, InterfaceDescriptor, DeviceConfigurations, EndPoint, USBContainer
 
 # Emulating USB Thermal Printer
@@ -80,19 +81,27 @@ class USBPrinter(USBDevice):
         pass
 
     def handle_data(self, usb_req):
-        pass
+        print hexdump(usb_req)
 
     def handle_unknown_control(self, control_req, usb_req):
+        if control_req.bmRequestType == 0x81:
+            if control_req.bRequest == 0x6:  # Get Descriptor
+                print 'want descriptor'
         if control_req.bmRequestType == 0x21:  # Host Request
             if control_req.bRequest == 0x0a:  # set idle
                 print 'Idle'
                 # Idle
                 pass
+        print "control_req"
+        print hexdump(control_req)
+        print "usb_req"
+        print hexdump(usb_req)
 
 
 usb_Dev = USBPrinter()
 usb_container = USBContainer()
 usb_container.add_usb_device(usb_Dev)  # Supports only one device!
+print "Starting Run"
 usb_container.run()
 
 # Run in cmd: usbip.exe -a 127.0.0.1 "1-1"
