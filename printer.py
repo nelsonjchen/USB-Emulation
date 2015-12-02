@@ -54,10 +54,11 @@ configuration.interfaces = [interface_d]
 
 
 class USBPrinter(USBDevice):
-    bLength=0x12
+    bLength = 0x12
+    bDescriptorType = 0x0200
+    bcdUSB = 0x0200
     bNumInterfaces = 0x1
     bConfigurationValue = 0x1
-    bcdUSB = 0x0200
     bDeviceClass = 0x0  # -> This is an Interface Class Defined Device
     bDeviceSubClass = 0x0
     bDeviceProtocol = 0x0
@@ -77,13 +78,11 @@ class USBPrinter(USBDevice):
         USBDevice.__init__(self)
         self.start_time = datetime.datetime.now()
 
-    def generate_printer_report(self):
-        pass
-
     def handle_data(self, usb_req):
         print hexdump(usb_req)
 
     def handle_unknown_control(self, control_req, usb_req):
+        print "unknown control"
         if control_req.bmRequestType == 0x81:
             if control_req.bRequest == 0x6:  # Get Descriptor
                 print 'want descriptor'

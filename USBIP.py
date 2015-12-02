@@ -292,11 +292,12 @@ class USBDevice():
     def handle_get_descriptor(self, control_req, usb_req):
         handled = False
         if control_req.wValue == 0x1: # Device
+            print "send descriptor"
             handled = True
             self.send_usb_req(usb_req, DeviceDescriptor(bDeviceClass=self.bDeviceClass,
                                                         bDeviceSubClass=self.bDeviceSubClass,
                                                         bDeviceProtocol=self.bDeviceProtocol,
-                                                        bMaxPacketSize0=getattr(self, 'bMaxPacketSize',0x8),
+                                                        bMaxPacketSize0=getattr(self, 'bMaxPacketSize', 0x8),
                                                         idVendor=self.vendorID,
                                                         idProduct=self.productID,
                                                         bcdDevice=self.bcdDevice,
@@ -306,6 +307,7 @@ class USBDevice():
                                                         bLength=getattr(self, 'bLength', 18),
                                                         bNumConfigurations=1).pack())
         elif control_req.wValue == 0x2: # configuration
+            print "send configuration of length %s" % control_req.wLength
             handled = True
             self.send_usb_req(usb_req, self.all_configurations[:control_req.wLength])
 
@@ -404,6 +406,7 @@ class USBContainer:
                     print 'handles requests'
                     cmd = USBIPCMDSubmit()
                     data = conn.recv(cmd.size())
+                    print hexdump.hexdump(data)
                     cmd.unpack(data)
                     usb_req = USBRequest(seqnum=cmd.seqnum,
                                          devid=cmd.devid,
@@ -414,6 +417,8 @@ class USBContainer:
                                          interval=cmd.interval,
                                          setup=cmd.setup,
                                          data=data)
+                    print "USB_REQ"
+                    pprint(vars(usb_req))
                     self.usb_devices[0].connection = conn
                     self.usb_devices[0].handle_usb_request(usb_req)
             conn.close()
