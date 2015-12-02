@@ -271,7 +271,8 @@ class USBDevice():
         str = self.configurations[0].pack()
         str += self.configurations[0].interfaces[0].pack()
         str += self.configurations[0].interfaces[0].descriptions[0].pack()
-        str += self.configurations[0].interfaces[0].endpoints[0].pack()
+        for endpoint in self.configurations[0].interfaces[0].endpoints:
+            str += endpoint.pack()
         self.all_configurations = str
 
     def send_usb_req(self, usb_req, usb_res, status=0):
