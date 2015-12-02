@@ -270,7 +270,8 @@ class USBDevice():
     def generate_raw_configuration(self):
         str = self.configurations[0].pack()
         str += self.configurations[0].interfaces[0].pack()
-        str += self.configurations[0].interfaces[0].descriptions[0].pack()
+        for description in self.configurations[0].interfaces[0].descriptions:
+            str += description.pack()
         for endpoint in self.configurations[0].interfaces[0].endpoints:
             str += endpoint.pack()
         self.all_configurations = str
@@ -294,13 +295,14 @@ class USBDevice():
             self.send_usb_req(usb_req, DeviceDescriptor(bDeviceClass=self.bDeviceClass,
                                                         bDeviceSubClass=self.bDeviceSubClass,
                                                         bDeviceProtocol=self.bDeviceProtocol,
-                                                        bMaxPacketSize0=0x8,
+                                                        bMaxPacketSize0=getattr(self, 'bMaxPacketSize',0x8),
                                                         idVendor=self.vendorID,
                                                         idProduct=self.productID,
                                                         bcdDevice=self.bcdDevice,
                                                         iManufacturer=0,
                                                         iProduct=0,
                                                         iSerialNumber=0,
+                                                        bLength=getattr(self, 'bLength', 18),
                                                         bNumConfigurations=1).pack())
         elif control_req.wValue == 0x2: # configuration
             handled = True
