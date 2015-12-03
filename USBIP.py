@@ -316,6 +316,8 @@ class USBDevice():
     def handle_usb_control(self, usb_req):
         control_req = StandardDeviceRequest()
         control_req.unpack(int_to_hex_string(usb_req.setup))
+        print "handle_usb_control   "
+        pprint(vars(control_req))
         handled = False
         if control_req.bmRequestType == 0x80: # Host Request
             if control_req.bRequest == 0x6: # Get Descriptor
@@ -406,7 +408,6 @@ class USBContainer:
                     print 'handles requests'
                     cmd = USBIPCMDSubmit()
                     data = conn.recv(cmd.size())
-                    print hexdump.hexdump(data)
                     cmd.unpack(data)
                     usb_req = USBRequest(seqnum=cmd.seqnum,
                                          devid=cmd.devid,
